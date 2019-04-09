@@ -8,6 +8,8 @@ import Enemy
 import Platform
 import Controller
 
+LINE_THICKNESS = 10
+
 # Player Class
 
 class Player:
@@ -17,9 +19,10 @@ class Player:
 		# Starting Pos
 		self.x = WINDOW_WIDTH/2 - LINE_THICKNESS/2 - 150
 		self.y = WINDOW_HEIGHT/2 - LINE_THICKNESS/2
+		self.health = 3;
 		# Rectangle
 		self.rect = pygame.Rect(self.x, self.y, LINE_THICKNESS, LINE_THICKNESS)
-		self.hit_rect = pygame.Rect(self.x, self.y, LINE_THICKNESS, LINE_THICKNESS)
+		self.hit_rect = pygame.Rect(self.x, self.y, LINE_THICKNESS, LINE_THICKNESS/2)
 		self.aim_dot = pygame.Rect(self.x, self.y, 2, 2)
 		self.face_dir = "e"
 		self.weapon = "fists"
@@ -28,15 +31,20 @@ class Player:
 		self.on_ground = False
 		self.is_falling = True # for moving down
 		self.is_jumping = False # for moving up
+		self.is_wall_jumping = False
 		self.max_height = 0
+		self.can_move_right = True
+		self.can_move_left = True
+		self.can_wall_jump = False
+		self.can_double_jump = False
 
 	def move_right(self, multiplier):
-		self.rect.x += (3 * multiplier)
-		self.hit_rect.x += (3 * multiplier)
+		self.rect.x += (4 * multiplier)
+		self.hit_rect.x += (4 * multiplier)
 		self.face_dir = "e"
 	def move_left(self, multiplier):
-		self.rect.x -= (3 * multiplier)
-		self.hit_rect.x -= (3 * multiplier)
+		self.rect.x -= (4 * multiplier)
+		self.hit_rect.x -= (4 * multiplier)
 		self.face_dir = "w"
 	def move_up(self, multiplier):
 		self.rect.y -= (3 * multiplier)
@@ -48,14 +56,32 @@ class Player:
 		self.face_dir = "s"
 
 
-	def jump(self):
+	def jump(self, max_h):
 		self.is_jumping = True
-		self.max_height = self.rect.y - 60
+		self.max_height = self.rect.y - max_h
+
+	def wall_jump(self, max_h):
+		self.is_wall_jumping = True
+		self.max_height = self.rect.y - max_h
 
 
 	def aim_move(self, mouse_x, mouse_y):
 		self.aim_dot.x = mouse_x
 		self.aim_dot.y = mouse_y
+
+	def draw_health(self, display_surf, color):
+		health_font = pygame.font.Font('freesansbold.ttf', 10)
+
+		health_bar_text = health_font.render('Health', True, green)
+		health_bar_text_rect = health_bar_text.get_rect()
+		health_bar_text_rect.topleft = (10,5)
+
+		health_bar = pygame.Rect(11, 15, 50 * self.health, 5)
+		health_bar_background = pygame.Rect(11, 15, 30, 5)
+
+		pygame.draw.rect(display_surf, grey, health_bar_background)
+		pygame.draw.rect(display_surf, green, health_bar)
+		display_surf.blit(health_bar_text, health_bar_text_rect)
 
 	def draw(self, display_surf, color):
 		pygame.draw.rect(display_surf, color, self.rect)

@@ -8,11 +8,16 @@ from Enemy import *
 from Platform import *
 from Controller import *
 
+WINDOW_WIDTH = 400
+WINDOW_HEIGHT = 300
+LINE_THICKNESS = 10
+red = pygame.Color('firebrick1')
+
 # Enemy Class
 
 class Enemy:
 
-	def __init__(self, WINDOW_WIDTH, WINDOW_HEIGHT, LINE_THICKNESS):
+	def __init__(self):
 
 		self.type = "blah" # eventually for random enemies
 
@@ -24,15 +29,15 @@ class Enemy:
 	def move(self, dest_x, dest_y):
 
 		if self.rect.x < dest_x:
-			self.rect.x += 1
+			self.rect.x += 2
 		if self.rect.x > dest_x:
-			self.rect.x -= 1
+			self.rect.x -= 2
 
 		if self.rect.y > dest_y:
-			self.rect.y -= 1
+			self.rect.y -= 2
 		if self.rect.y < dest_y:
-			self.rect.y += 1
+			self.rect.y += 2
 
 	def draw(self, display_surf):
 
-		pygame.draw.rect(display_surf, blue, self.rect)
+		pygame.draw.rect(display_surf, red, self.rect)

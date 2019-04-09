@@ -5,17 +5,17 @@ import random
 from pygame.locals import *
 from Player import *
 from Enemy import *
-from Platform import *
 from Controller import *
 
 class Platform:
 
-	def __init__(self, x, y, w, h, t):
+	def __init__(self, x, y, w, h, t, vel):
 
 		self.width = w
 		self.height = h
 		self.rect = pygame.Rect(x, y, w, h)
 		self.type = t
+		self.vel = vel
 
 	def move_up(self):
 		pass
@@ -39,6 +39,8 @@ class Platform:
 	def deactivate(self):
 		self.type = "inactive"
 
+	def set_plat_vel(self, vel):
+		self.vel = vel
 
 	def draw(self, display_surf, color):
 		pygame.draw.rect(display_surf, color, self.rect)
