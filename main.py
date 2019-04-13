@@ -9,12 +9,19 @@ from Platform import *
 from Controller import *
 from Bullet import *
 from Boss import *
+#from lang import *
 #import pygame_textinput
 import GIFImage
 
 # Frames per second
 
 FPS = 1000
+
+# LAang Stuff
+
+#v_manager = VarManager()
+#commander = Commander()
+#call_stack = ProcessManagerStack()
 
 # Global Constant Variables
 
@@ -40,10 +47,16 @@ right_side_rect = pygame.Rect(WINDOW_WIDTH - 10,0, 10, WINDOW_HEIGHT)
 
 def draw_title_screen():
 	display_surf.fill((0, 0, 0))
+	pentagram = pygame.image.load('pentagram.jpg').convert()
+	pentagram = pygame.transform.scale(pentagram, (100, 100))
+	pentagram_rect = pentagram.get_rect()
 	title_font = pygame.font.Font('freesansbold.ttf', 30)
-	title_text = title_font.render('SLAY SATAN\'S MINIONS, WRITE CODE, SMOKE GANJA', True, red)
+	title_text = title_font.render('SLAY SATAN\'S MINIONS', True, red)
 	title_rect = title_text.get_rect()
-
+	pentagram_rect.topleft = (WINDOW_WIDTH/2 - 100, WINDOW_HEIGHT/2 - 100)
+	title_rect.topleft = (0, 0)
+	display_surf.blit(title_text, title_rect)
+	display_surf.blit(pentagram, pentagram_rect)
 
 
 def draw_arena():
@@ -53,10 +66,11 @@ def draw_sides():
 	pygame.draw.rect(display_surf, blue, left_side_rect)
 	pygame.draw.rect(display_surf, blue, right_side_rect)
 
-def display_command_prompt():
+def display_command_prompt(current_text):
+	display_surf.fill((0, 0, 0))
 	text = BASIC_FONT.render(current_text,True,green)
 	text_rect = text.get_rect()
-	text_rect.topleft = (10, 100)
+	text_rect.topleft = (WINDOW_WIDTH/2 - 50, 200)
 	display_surf.blit(text, text_rect)
 
 # Displays the death announcement
@@ -136,13 +150,17 @@ def main():
 
 	level_type = "vertical"
 
+	game_started = False
+
+	command_displayed = False
+
 	# _______ IMAGE STUFF __________________
 
 	blood_right = GIFImage.GIFImage("blood_anim_right.gif")
 	blood_left = GIFImage.GIFImage("blood_anim_2.gif")
 
 	# image example
-	# pentagram = pg.image.load('pentagram.png').convert()
+	# pentagram = pygame.image.load('pentagram.png').convert()
 
 	# ____________ SOUND STUFF ____________
 
@@ -176,12 +194,14 @@ def main():
 
 	# Draws the starting position of the Arena
 
-	draw_arena()
+	#draw_arena()
 
-	player.draw(display_surf, WHITE)
+	#player.draw(display_surf, WHITE)
 
-	for i in platforms:
-		i.draw(display_surf, blue)
+	#for i in platforms:
+		#i.draw(display_surf, blue)
+
+	draw_title_screen()
 
 	is_on = -1
 
@@ -209,87 +229,105 @@ def main():
 				player.aim_move(mouse_x, mouse_y)
           
 			if event.type == pygame.KEYDOWN:
-				if len(current_text) <= 30:
-					if event.key == pygame.K_a:
-						current_text+= "a"
-						text = BASIC_FONT.render(current_text, True, green)
-					elif event.key == pygame.K_b:
-						current_text+="b"
-						text = BASIC_FONT.render(current_text, True, green)
-					elif event.key == pygame.K_c:
-						current_text+="c"
-						text = BASIC_FONT.render(current_text, True, green)
-					elif event.key == pygame.K_d:
-						current_text+="d"
-						text = BASIC_FONT.render(current_text, True, green)
-					elif event.key == pygame.K_e:
-						current_text+="e"
-						text = BASIC_FONT.render(current_text, True, green)
-					elif event.key == pygame.K_f:
-						current_text+="f"
-						text = BASIC_FONT.render(current_text, True, green)
-					elif event.key == pygame.K_g:
-						current_text+="g"
-						text = BASIC_FONT.render(current_text, True, green)
-					elif event.key == pygame.K_h:
-						current_text+="h"
-						text = BASIC_FONT.render(current_text, True, green)
-					elif event.key == pygame.K_i:
-						current_text+="i"
-						text = BASIC_FONT.render(current_text, True, green)
-					elif event.key == pygame.K_j:
-						current_text+="j"
-						text = BASIC_FONT.render(current_text, True, green)
-					elif event.key == pygame.K_k:
-						current_text+="k"
-						text = BASIC_FONT.render(current_text, True, green)
-					elif event.key == pygame.K_l:
-						current_text+="l"
-						text = BASIC_FONT.render(current_text, True, green)
-					elif event.key == pygame.K_m:
-						current_text+="m"
-						text = BASIC_FONT.render(current_text, True, green)
-					elif event.key == pygame.K_n:
-						current_text+="n"
-						text = BASIC_FONT.render(current_text, True, green)
-					elif event.key == pygame.K_o:
-						current_text+="o"
-						text = BASIC_FONT.render(current_text, True, green)
-					elif event.key == pygame.K_p:
-						current_text+="p"
-						text = BASIC_FONT.render(current_text, True, green)
-					elif event.key == pygame.K_q:
-						current_text+="q"
-						text = BASIC_FONT.render(current_text, True, green)
-					elif event.key == pygame.K_r:
-						current_text+="r"
-						text = BASIC_FONT.render(current_text, True, green)
-					elif event.key == pygame.K_s:
-						current_text+="s"
-						text = BASIC_FONT.render(current_text, True, green)
-					elif event.key == pygame.K_t:
-						current_text+="t"
-						text = BASIC_FONT.render(current_text, True, green)
-					elif event.key == pygame.K_u:
-						current_text+="u"
-						text = BASIC_FONT.render(current_text, True, green)
-					elif event.key == pygame.K_v:
-						current_text+="v"
-						text = BASIC_FONT.render(current_text, True, green)
-					elif event.key == pygame.K_w:
-						current_text+="w"
-						text = BASIC_FONT.render(current_text, True, green)
-					elif event.key == pygame.K_x:
-						current_text+="x"
-						text = BASIC_FONT.render(current_text, True, green)
-					elif event.key == pygame.K_y:
-						current_text+="y"
-						text = BASIC_FONT.render(current_text, True, green)
-					elif event.key == pygame.K_z:
-						current_text+="z"
-						text = BASIC_FONT.render(current_text, True, green)
+				if command_displayed:
+					if len(current_text) <= 30:
+						if event.key == pygame.K_a:
+							current_text+= "a"
+							text = BASIC_FONT.render(current_text, True, green)
+						elif event.key == pygame.K_b:
+							current_text+="b"
+							text = BASIC_FONT.render(current_text, True, green)
+						elif event.key == pygame.K_c:
+							current_text+="c"
+							text = BASIC_FONT.render(current_text, True, green)
+						elif event.key == pygame.K_d:
+							current_text+="d"
+							text = BASIC_FONT.render(current_text, True, green)
+						elif event.key == pygame.K_e:
+							current_text+="e"
+							text = BASIC_FONT.render(current_text, True, green)
+						elif event.key == pygame.K_f:
+							current_text+="f"
+							text = BASIC_FONT.render(current_text, True, green)
+						elif event.key == pygame.K_g:
+							current_text+="g"
+							text = BASIC_FONT.render(current_text, True, green)
+						elif event.key == pygame.K_h:
+							current_text+="h"
+							text = BASIC_FONT.render(current_text, True, green)
+						elif event.key == pygame.K_i:
+							current_text+="i"
+							text = BASIC_FONT.render(current_text, True, green)
+						elif event.key == pygame.K_j:
+							current_text+="j"
+							text = BASIC_FONT.render(current_text, True, green)
+						elif event.key == pygame.K_k:
+							current_text+="k"
+							text = BASIC_FONT.render(current_text, True, green)
+						elif event.key == pygame.K_l:
+							current_text+="l"
+							text = BASIC_FONT.render(current_text, True, green)
+						elif event.key == pygame.K_m:
+							current_text+="m"
+							text = BASIC_FONT.render(current_text, True, green)
+						elif event.key == pygame.K_n:
+							current_text+="n"
+							text = BASIC_FONT.render(current_text, True, green)
+						elif event.key == pygame.K_o:
+							current_text+="o"
+							text = BASIC_FONT.render(current_text, True, green)
+						elif event.key == pygame.K_p:
+							current_text+="p"
+							text = BASIC_FONT.render(current_text, True, green)
+						elif event.key == pygame.K_q:
+							current_text+="q"
+							text = BASIC_FONT.render(current_text, True, green)
+						elif event.key == pygame.K_r:
+							current_text+="r"
+							text = BASIC_FONT.render(current_text, True, green)
+						elif event.key == pygame.K_s:
+							current_text+="s"
+							text = BASIC_FONT.render(current_text, True, green)
+						elif event.key == pygame.K_t:
+							current_text+="t"
+							text = BASIC_FONT.render(current_text, True, green)
+						elif event.key == pygame.K_u:
+							current_text+="u"
+							text = BASIC_FONT.render(current_text, True, green)
+						elif event.key == pygame.K_v:
+							current_text+="v"
+							text = BASIC_FONT.render(current_text, True, green)
+						elif event.key == pygame.K_w:
+							current_text+="w"
+							text = BASIC_FONT.render(current_text, True, green)
+						elif event.key == pygame.K_x:
+							current_text+="x"
+							text = BASIC_FONT.render(current_text, True, green)
+						elif event.key == pygame.K_y:
+							current_text+="y"
+							text = BASIC_FONT.render(current_text, True, green)
+						elif event.key == pygame.K_z:
+							current_text+="z"
+							text = BASIC_FONT.render(current_text, True, green)
+						elif event.key == pygame.K_z:
+							current_text+="z"
+							text = BASIC_FONT.render(current_text, True, green)
+						elif event.key == pygame.K_RETURN:
+							# submit current_text to lang and move to next line
+							pass
 
-					# WORK ON SYMBOL INPUT HERE!!!!
+				if event.key==pygame.K_BACKQUOTE:
+					if command_displayed == False:
+						game_started = False
+						command_displayed = True
+						display_command_prompt(current_text)
+					else:
+						game_started = True
+						command_displayed = False
+
+				if command_displayed:
+
+					display_command_prompt(current_text)
 
 				if event.key==pygame.K_a:
 					if player.can_move_left:
@@ -341,6 +379,11 @@ def main():
 					player.can_slash = True
 					pass
 				if event.key==pygame.K_RETURN:
+					if(game_started == False and command_displayed == False):
+						game_started = True
+					else if(game_started == False and command_displayed == True):
+						# do nothing. , this is handled above in text input
+						pass
 					if(is_dead):
 						display_surf.fill((0, 0, 0))
 						player.is_falling = False
@@ -351,207 +394,212 @@ def main():
 			# player.shoot(mouse_x, mouse_y)
 			pass
 
-		# _______ ENEMY SPAWNING _________________
+		# _______________ IF RETURN PRESSED, START GAME ________________
 
-		if platforms[is_on].type != "last":
-
-			e_spawn_counter += 1
-
-			if e_spawn_counter > 100:
-
-				enemies.append(Enemy.Enemy())
-
-				e_spawn_counter = 0
-
-		# _______ PLAYER MOVEMENT _________________
-
-		if move_right:
-			if(player.rect.right < right_side_rect.left - 2):
-				player.move_right(multiplier)
-			else:
-				player.rect.x = right_side_rect.x - 11
-				player.hit_rect.x = right_side_rect.x - 11
-				player.can_move_right = False
-				if not player.is_wall_jumping:
-					player.can_wall_jump = True
-			if level_type == "horizontal":
-				for i in platforms:
-					i.move_left(3 * multiplier)
-		if move_left:
-			if(player.rect.left > left_side_rect.right + 2):
-				player.move_left(multiplier)
-			else:
-				player.rect.x = left_side_rect.x + 11
-				player.hit_rect.x = left_side_rect.x + 11
-				player.can_move_left = False
-				if not player.is_wall_jumping:
-					player.can_wall_jump = True
-			if level_type == "horizontal":
-				for i in platforms:
-					i.move_right(3 * multiplier)
-
-		if player.rect.left > left_side_rect.right + 2:
-			player.can_move_left = True
-		if player.rect.right < right_side_rect.left - 2:
-			player.can_move_right = True
-		if player.rect.left > left_side_rect.right + 2 and player.rect.right < right_side_rect.left - 2:
-			player.can_wall_jump = False
-
-		# _______________ RANDOM DRAWING _________________________
-
-		draw_arena()
-		draw_sides()
-		player.draw(display_surf, WHITE)
-
-		# _______ BOSS STUFF _____________
+		if game_started:
 
 
-		if boss_is_active:
-			boss.move(right_side_rect, left_side_rect)
-			# boss.draw(display_surf, red)
-			boss.draw_health(display_surf, red, grey)
+			# _______ ENEMY SPAWNING _________________
 
-		if (boss.health > 0):
-			boss.draw(display_surf, red)
+			if platforms[is_on].type != "last":
 
-		boss.rect.y = platforms[51].rect.y - (LINE_THICKNESS + 10)
+				e_spawn_counter += 1
 
-		# ____________ ENEMY STUFF ________________
+				if e_spawn_counter > 100:
 
-		for i in enemies:
-			i.move(player.rect.x, player.rect.y)
-			i.draw(display_surf)
-			if player.check_slash_collision(i.rect):
-				enemies.remove(i)
+					enemies.append(Enemy.Enemy())
 
-		# __________ PLATFORM STUFF ______________
+					e_spawn_counter = 0
 
-		for i in range(len(platforms)):
+			# _______ PLAYER MOVEMENT _________________
 
-			if platforms[i].rect.y > player.rect.y + 300:
-				platforms[i].type = "inactive"
+			if move_right:
+				if(player.rect.right < right_side_rect.left - 2):
+					player.move_right(multiplier)
+				else:
+					player.rect.x = right_side_rect.x - 11
+					player.hit_rect.x = right_side_rect.x - 11
+					player.can_move_right = False
+					if not player.is_wall_jumping:
+						player.can_wall_jump = True
+				if level_type == "horizontal":
+					for i in platforms:
+						i.move_left(3 * multiplier)
+			if move_left:
+				if(player.rect.left > left_side_rect.right + 2):
+					player.move_left(multiplier)
+				else:
+					player.rect.x = left_side_rect.x + 11
+					player.hit_rect.x = left_side_rect.x + 11
+					player.can_move_left = False
+					if not player.is_wall_jumping:
+						player.can_wall_jump = True
+				if level_type == "horizontal":
+					for i in platforms:
+						i.move_right(3 * multiplier)
 
-			if platforms[i].type is not "inactive":
+			if player.rect.left > left_side_rect.right + 2:
+				player.can_move_left = True
+			if player.rect.right < right_side_rect.left - 2:
+				player.can_move_right = True
+			if player.rect.left > left_side_rect.right + 2 and player.rect.right < right_side_rect.left - 2:
+				player.can_wall_jump = False
 
-				platforms[i].draw(display_surf, blue)
-				platforms[i].rect.y += platforms[i].vel
+			# _______________ RANDOM DRAWING _________________________
 
-				if platforms[i].type == "moving":
-					platforms[i].side_move()
+			draw_arena()
+			draw_sides()
+			player.draw(display_surf, WHITE)
 
-				if player.check_plat_collision(platforms[i].rect):
-					is_on = i
-					last_is_on = i
-					player.is_falling = False
-					player.is_jumping = False
-					player.rect.y = platforms[i].rect.y - platforms[i].height - 1
-					player.hit_rect.y = platforms[i].rect.y - platforms[i].height - 1
-					player.can_jump = True
-					player.on_ground = True
+			# _______ BOSS STUFF _____________
 
-		if(is_on > -1):
-			if player.is_jumping == False:
-				if platforms[is_on].type is not "inactive":
-					if player.rect.right < platforms[is_on].rect.left or player.rect.left > platforms[is_on].rect.right:
-						player.is_falling = True
-						is_on = -1
-						player.can_jump = False
 
-		# Increase platform speed
+			if boss_is_active:
+				boss.move(right_side_rect, left_side_rect)
+				# boss.draw(display_surf, red)
+				boss.draw_health(display_surf, red, grey)
 
-		if last_is_on >= 10 and last_is_on <= 20:
-			for i in platforms:
-				i.vel = 1
-		elif last_is_on >= 21 and last_is_on < 51:
-			for i in platforms:
-				i.vel = 2
-		elif last_is_on >= 50:
-			if platforms[50].rect.y < platforms[51].rect.y + 200:
-				platforms[51].vel = 1
-			else:
-				platforms[51].set_plat_vel(0)
-				platforms[51].type = "last"
-				boss_is_active = True
+			if (boss.health > 0):
+				boss.draw(display_surf, red)
 
-		else:
-			platform_vel = 0
+			boss.rect.y = platforms[51].rect.y - (LINE_THICKNESS + 10)
 
-		# Jumping stuff ---------------------------------
+			# ____________ ENEMY STUFF ________________
 
-		if(player.is_falling):
-			if(player.rect.y < player.max_height + 10):
-				gravity = 3
-			if(player.rect.y < player.max_height + 30):
-				gravity = 5
-
-			for i in platforms:
-				if i.type != "last":
-					i.rect.y -= gravity+1
 			for i in enemies:
-				i.rect.y -= gravity+1
-			player.rect.y += gravity
-			player.hit_rect.y += gravity
+				i.move(player.rect.x, player.rect.y)
+				i.draw(display_surf)
+				if player.check_slash_collision(i.rect):
+					enemies.remove(i)
 
-		if(player.is_wall_jumping):
-			player.can_wall_jump = False
-			if(player.rect.y > player.max_height):
-				if(player.rect.y < player.max_height + 30):
-					gravity = 3
+			# __________ PLATFORM STUFF ______________
+
+			for i in range(len(platforms)):
+
+				if platforms[i].rect.y > player.rect.y + 300:
+					platforms[i].type = "inactive"
+
+				if platforms[i].type is not "inactive":
+
+					platforms[i].draw(display_surf, blue)
+					platforms[i].rect.y += platforms[i].vel
+
+					if platforms[i].type == "moving":
+						platforms[i].side_move()
+
+					if player.check_plat_collision(platforms[i].rect):
+						is_on = i
+						last_is_on = i
+						player.is_falling = False
+						player.is_jumping = False
+						player.rect.y = platforms[i].rect.y - platforms[i].height - 1
+						player.hit_rect.y = platforms[i].rect.y - platforms[i].height - 1
+						player.can_jump = True
+						player.on_ground = True
+
+			if(is_on > -1):
+				if player.is_jumping == False:
+					if platforms[is_on].type is not "inactive":
+						if player.rect.right < platforms[is_on].rect.left or player.rect.left > platforms[is_on].rect.right:
+							player.is_falling = True
+							is_on = -1
+							player.can_jump = False
+
+			# Increase platform speed
+
+			if last_is_on >= 10 and last_is_on <= 20:
+				for i in platforms:
+					i.vel = 1
+			elif last_is_on >= 21 and last_is_on < 51:
+				for i in platforms:
+					i.vel = 2
+			elif last_is_on >= 50:
+				if platforms[50].rect.y < platforms[51].rect.y + 200:
+					platforms[51].vel = 1
+				else:
+					platforms[51].set_plat_vel(0)
+					platforms[51].type = "last"
+					boss_is_active = True
+
+			else:
+				platform_vel = 0
+
+			# Jumping stuff ---------------------------------
+
+			if(player.is_falling):
 				if(player.rect.y < player.max_height + 10):
-					gravity = 1
+					gravity = 3
+				if(player.rect.y < player.max_height + 30):
+					gravity = 5
 
 				for i in platforms:
 					if i.type != "last":
-						i.rect.y += gravity+2
+						i.rect.y -= gravity+1
 				for i in enemies:
-					i.rect.y += gravity+2
-				player.rect.y -= gravity
-				player.hit_rect.y -= gravity
-			else:
-				player.is_wall_jumping = False
-				player.is_falling = True
+					i.rect.y -= gravity+1
+				player.rect.y += gravity
+				player.hit_rect.y += gravity
 
+			if(player.is_wall_jumping):
+				player.can_wall_jump = False
+				if(player.rect.y > player.max_height):
+					if(player.rect.y < player.max_height + 30):
+						gravity = 3
+					if(player.rect.y < player.max_height + 10):
+						gravity = 1
 
-		if(player.is_jumping == True):
-			player.can_jump = False
-			if(player.rect.y > player.max_height):
-				if(player.rect.y < player.max_height + 30):
-					gravity = 3
-				if(player.rect.y < player.max_height + 10):
-					gravity = 1
-
-				for i in platforms:
-					if i.type != "last":
+					for i in platforms:
+						if i.type != "last":
+							i.rect.y += gravity+2
+					for i in enemies:
 						i.rect.y += gravity+2
-				for i in enemies:
-					i.rect.y += gravity+2
-				player.rect.y -= gravity
-				player.hit_rect.y -= gravity
-			else:
+					player.rect.y -= gravity
+					player.hit_rect.y -= gravity
+				else:
+					player.is_wall_jumping = False
+					player.is_falling = True
+
+
+			if(player.is_jumping == True):
+				player.can_jump = False
+				if(player.rect.y > player.max_height):
+					if(player.rect.y < player.max_height + 30):
+						gravity = 3
+					if(player.rect.y < player.max_height + 10):
+						gravity = 1
+
+					for i in platforms:
+						if i.type != "last":
+							i.rect.y += gravity+2
+					for i in enemies:
+						i.rect.y += gravity+2
+					player.rect.y -= gravity
+					player.hit_rect.y -= gravity
+				else:
+					player.is_jumping = False
+					player.is_falling = True
+
+			if(player.is_jumping == False and player.is_falling == False):
+				player.can_jump = True
+				player.rect.y += platforms[is_on].vel
+				player.hit_rect.y += platforms[is_on].vel
+
+			if(player.is_falling == True):
+				player.can_jump = False
 				player.is_jumping = False
-				player.is_falling = True
+				player.is_wall_jumping = False
 
-		if(player.is_jumping == False and player.is_falling == False):
-			player.can_jump = True
-			player.rect.y += platforms[is_on].vel
-			player.hit_rect.y += platforms[is_on].vel
+			# --------------------------------------------
 
-		if(player.is_falling == True):
-			player.can_jump = False
-			player.is_jumping = False
-			player.is_wall_jumping = False
+			display_health(player.health)
 
-		# --------------------------------------------
+			# check death
 
-		display_health(player.health)
+			if(platforms[last_is_on].rect.y < -200):
+				display_death(current_text)
+				is_dead = True
 
-		# check death
-
-		if(platforms[last_is_on].rect.y < -200):
-			display_death(current_text)
-			is_dead = True
-
-		# -----------------------------------------
+			# -----------------------------------------
 
 
 		pygame.display.update()
