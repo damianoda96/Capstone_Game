@@ -9,19 +9,14 @@ from Platform import *
 from Controller import *
 from Bullet import *
 from Boss import *
-#from lang import *
+from Textbox import *
+from lang import *
 #import pygame_textinput
 import GIFImage
 
 # Frames per second
 
 FPS = 1000
-
-# LAang Stuff
-
-#v_manager = VarManager()
-#commander = Commander()
-#call_stack = ProcessManagerStack()
 
 # Global Constant Variables
 
@@ -42,6 +37,10 @@ grey = pygame.Color('gray20')
 
 left_side_rect = pygame.Rect(0,0, 10, WINDOW_HEIGHT)
 right_side_rect = pygame.Rect(WINDOW_WIDTH - 10,0, 10, WINDOW_HEIGHT)
+
+# commands
+
+commands = []
 
 # draws the arena --------------------------------------------------
 
@@ -66,11 +65,10 @@ def draw_sides():
 	pygame.draw.rect(display_surf, blue, left_side_rect)
 	pygame.draw.rect(display_surf, blue, right_side_rect)
 
-def display_command_prompt(current_text):
-	display_surf.fill((0, 0, 0))
+def display_command_prompt(current_text, y):
 	text = BASIC_FONT.render(current_text,True,green)
 	text_rect = text.get_rect()
-	text_rect.topleft = (WINDOW_WIDTH/2 - 50, 200)
+	text_rect.topleft = (10, 20 * y)
 	display_surf.blit(text, text_rect)
 
 # Displays the death announcement
@@ -82,10 +80,6 @@ def display_death(current_text):
 	restart_rect = restart_surf.get_rect()
 	result_rect.topleft = (WINDOW_WIDTH/2 - 50, 100)
 	restart_rect.topleft = (WINDOW_WIDTH/2 - 50, 150)
-	#text = BASIC_FONT.render(current_text,True,green)
-	#text_rect = text.get_rect()
-	#text_rect.topleft = (WINDOW_WIDTH/2 - 50, 200)
-	#display_surf.blit(text, text_rect)
 	display_surf.blit(result_surf, result_rect)
 	display_surf.blit(restart_surf, restart_rect)
 
@@ -127,7 +121,9 @@ def main():
 
 	finished = False
 
-	current_text = ""
+	current_text_lines = []
+
+	# current_text = ""
 
 	enemies = []
 
@@ -153,6 +149,11 @@ def main():
 	game_started = False
 
 	command_displayed = False
+
+	newline_counter = 1
+	line_counter = 1
+
+	current_text = "%s::~>> " % str(newline_counter)
 
 	# _______ IMAGE STUFF __________________
 
@@ -216,6 +217,10 @@ def main():
 	boss_is_active = False
 
 	boss = Boss(platforms[51].rect.x + 100, platforms[51].rect.y - 10, LINE_THICKNESS)
+
+	text_flicker_counter = 0
+
+	screen_flicker_counter = 0
 
 	# ________________ START GAME LOOP ____________________________
 
@@ -309,25 +314,92 @@ def main():
 						elif event.key == pygame.K_z:
 							current_text+="z"
 							text = BASIC_FONT.render(current_text, True, green)
-						elif event.key == pygame.K_z:
-							current_text+="z"
+						elif event.key == pygame.K_EQUALS:
+							current_text+="="
 							text = BASIC_FONT.render(current_text, True, green)
+						elif event.key == pygame.K_SLASH:
+							current_text+="/"
+							text = BASIC_FONT.render(current_text, True, green)
+						elif event.key == pygame.K_PLUS:
+							current_text+="+"
+							text = BASIC_FONT.render(current_text, True, green)
+						elif event.key == pygame.K_KP_PLUS:
+							current_text+="+"
+							text = BASIC_FONT.render(current_text, True, green)
+						elif event.key == pygame.K_KP_ASTERISK:
+							current_text+="*"
+							text = BASIC_FONT.render(current_text, True, green)
+						elif event.key == pygame.K_MINUS:
+							current_text+="-"
+							text = BASIC_FONT.render(current_text, True, green)
+						elif event.key == pygame.K_ASTERISK:
+							current_text+="*"
+							text = BASIC_FONT.render(current_text, True, green)
+						elif event.key == pygame.K_0:
+							current_text+="0"
+							text = BASIC_FONT.render(current_text, True, green)
+						elif event.key == pygame.K_1:
+							current_text+="1"
+							text = BASIC_FONT.render(current_text, True, green)
+						elif event.key == pygame.K_2:
+							current_text+="2"
+							text = BASIC_FONT.render(current_text, True, green)
+						elif event.key == pygame.K_3:
+							current_text+="3"
+							text = BASIC_FONT.render(current_text, True, green)
+						elif event.key == pygame.K_4:
+							current_text+="4"
+							text = BASIC_FONT.render(current_text, True, green)
+						elif event.key == pygame.K_5:
+							current_text+="5"
+							text = BASIC_FONT.render(current_text, True, green)
+						elif event.key == pygame.K_6:
+							current_text+="6"
+							text = BASIC_FONT.render(current_text, True, green)
+						elif event.key == pygame.K_7:
+							current_text+="7"
+							text = BASIC_FONT.render(current_text, True, green)
+						elif event.key == pygame.K_8:
+							current_text+="8"
+							text = BASIC_FONT.render(current_text, True, green)
+						elif event.key == pygame.K_9:
+							current_text+="9"
+							text = BASIC_FONT.render(current_text, True, green)
+						elif event.key == pygame.K_SPACE:
+							current_text+=" "
+							text = BASIC_FONT.render(current_text, True, green)
+						elif event.key == pygame.K_BACKSPACE:
+							current_text = current_text[:-1]
+							text = BASIC_FONT.render(current_text, True, green)
+							
+
 						elif event.key == pygame.K_RETURN:
+							commands.append(Textbox(current_text, green, BASIC_FONT, newline_counter))
+							if input_command(current_text):
+								output = input_command(current_text)
+								newline_counter += 1
+								commands.append(Textbox(str(output), green, BASIC_FONT, newline_counter))
+							newline_counter += 1
+							line_counter += 1
+
+							current_text = "%s::~>> " % str(line_counter)
 							# submit current_text to lang and move to next line
 							pass
 
 				if event.key==pygame.K_BACKQUOTE:
 					if command_displayed == False:
+						display_surf.fill((0, 0, 0))
+						newline_counter = 1
+						line_counter = 1
 						game_started = False
 						command_displayed = True
-						display_command_prompt(current_text)
+						display_command_prompt(current_text, newline_counter)
 					else:
 						game_started = True
 						command_displayed = False
 
 				if command_displayed:
-
-					display_command_prompt(current_text)
+					display_command_prompt(current_text, newline_counter)
 
 				if event.key==pygame.K_a:
 					if player.can_move_left:
@@ -381,9 +453,9 @@ def main():
 				if event.key==pygame.K_RETURN:
 					if(game_started == False and command_displayed == False):
 						game_started = True
-					else if(game_started == False and command_displayed == True):
-						# do nothing. , this is handled above in text input
-						pass
+					elif(game_started == False and command_displayed == True):
+						for i in commands:
+							i.draw(display_surf)
 					if(is_dead):
 						display_surf.fill((0, 0, 0))
 						player.is_falling = False

@@ -80,9 +80,9 @@ def store_var(line):
 
 def print_var(line):
 	if get_var(line[1]):
-		print(get_var(line[1]).content)
+		return (get_var(line[1]).content)
 	else:
-		print(line[1])
+		return (line[1])
 
 def get_var(search_name):
 	for var in v_manager.vars:
@@ -104,7 +104,7 @@ def set_var(var_to_set):
 # --------------------- ASSIGNMENT ----------------------------
 
 def assign(current_line):
-	print(current_line)
+	#print(current_line)
 	assert(len(current_line) == 4)
 	assert(current_line[2] == "=")
 	value = current_line[3]
@@ -264,11 +264,11 @@ class Commander:
 				do_return(sub_line)
 				current_line.remove(func)
 			elif func == "print":
-				print_var(sub_line)
+				return (print_var(sub_line))
 				current_line.remove(func)
 			else:
-				print(con_color.FAIL, func, "is not a known term...", con_color.ENDC)
-				return False
+				#print(con_color.FAIL, func, "is not a known term...", con_color.ENDC)
+				return (func + " is not a known term..")
 
 			# now, look back through line for more commands
 			# store index as that
@@ -344,25 +344,21 @@ def parse(u_input):
 
 	line = u_input.split()
 
-	commander.command(line)
+	output = commander.command(line)
 
 	# check for proper format
 
 	for i in range(len(line)):
 		if i == 0 and line[i] == "and":
-			print(con_color.FAIL, line[i], "needs a variable on both ends", con_color.ENDC)
-			return False
+			return "'and' needs two operands.."
 		elif i == 0 and line[i] == "or":
-			print(con_color.FAIL, i, "needs a variable on both ends", con_color.ENDC)
-			return False
+			return "'or' needs two operands.."
 		elif i == len(line) - 1 and line[i] == "and":
-			print(con_color.FAIL, line[i], "needs a variable on both ends", con_color.ENDC)
-			return False
+			return "'and' needs two operands.."
 		elif i == len(line) - 1 and line[i] == "or":
-			print(con_color.FAIL, line[i], "needs a variable on both ends", con_color.ENDC)
-			return False
+			return "'or' needs two operands.."
 
-	return True
+	return output
 
 # --------------------- MAIN STUFF -----------------------
 
@@ -370,7 +366,38 @@ v_manager = VarManager()
 commander = Commander()
 call_stack = ProcessManagerStack()
 
-print("__Logic Calculator__\n")
+def input_command(u_input):
+	command = ""
+	counter = 0
+
+	while True:
+		if(u_input != ""):
+			if(u_input[counter].isalpha()):
+				break
+			counter+=1
+		else:
+			return None
+
+	while counter < len(u_input):
+		command += u_input[counter]
+		counter+=1
+
+	print(command)
+
+	if command == "quit" or command == "q":
+		# v_manager.print_vars()
+		return "quit"
+	elif command == "run":
+		# run through logic (use the stacker, make sure this has been stacked previously during parsing)
+		#print("running...")
+		pass
+	else:
+		return parse(command)  # format correct
+			# print(con_color.OKGREEN + "Good" + con_color.ENDC)
+
+
+
+'''print("__Logic Calculator__")
 
 con_color = color()
 
@@ -402,4 +429,4 @@ while True:
 			# print(con_color.OKGREEN + "Good" + con_color.ENDC)
 			pass
 		else:
-			print(con_color.FAIL + "Something went wrong..." + con_color.ENDC)
+			print(con_color.FAIL + "Something went wrong..." + con_color.ENDC)'''
