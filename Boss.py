@@ -16,7 +16,7 @@ class Boss:
 		self.move_left = False
 		self.move_right = True
 		self.rect = pygame.Rect(self.x, self.y, LINE_THICKNESS + 10, LINE_THICKNESS + 10)
-		self.health = 3
+		self.health = 10
 
 	def attack():
 		pass
@@ -41,12 +41,12 @@ class Boss:
 	def draw_health(self, display_surf, color1, color2):
 		health_font = pygame.font.Font('freesansbold.ttf', 10)
 
-		health_bar_text = health_font.render('Health', True, color1)
+		health_bar_text = health_font.render('THE RED SQUARE', True, color1)
 		health_bar_text_rect = health_bar_text.get_rect()
 		health_bar_text_rect.topleft = (235,5)
 
-		health_bar = pygame.Rect(235, 15, 50 * self.health, 5)
-		health_bar_background = pygame.Rect(235, 15, 30, 5)
+		health_bar = pygame.Rect(235, 15, 15 * self.health, 5)
+		health_bar_background = pygame.Rect(235, 15, 150, 5)
 
 		pygame.draw.rect(display_surf, color2, health_bar_background)
 		pygame.draw.rect(display_surf, color1, health_bar)

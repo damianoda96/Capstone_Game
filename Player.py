@@ -19,7 +19,7 @@ class Player:
 		# Starting Pos
 		self.x = WINDOW_WIDTH/2 - LINE_THICKNESS/2 - 150
 		self.y = WINDOW_HEIGHT/2 - LINE_THICKNESS/2
-		self.health = 3;
+		self.health = 10;
 		# Rectangle
 		self.rect = pygame.Rect(self.x, self.y, LINE_THICKNESS, LINE_THICKNESS)
 		self.hit_rect = pygame.Rect(self.x, self.y, LINE_THICKNESS, LINE_THICKNESS/2)
@@ -76,8 +76,8 @@ class Player:
 		health_bar_text_rect = health_bar_text.get_rect()
 		health_bar_text_rect.topleft = (10,5)
 
-		health_bar = pygame.Rect(11, 15, 50 * self.health, 5)
-		health_bar_background = pygame.Rect(11, 15, 30, 5)
+		health_bar = pygame.Rect(11, 15, 5 * self.health, 5)
+		health_bar_background = pygame.Rect(11, 15, 150, 5)
 
 		pygame.draw.rect(display_surf, grey, health_bar_background)
 		pygame.draw.rect(display_surf, green, health_bar)
@@ -121,6 +121,16 @@ class Player:
 		player_rect = self.rect
 		if player_rect.bottom >= plat_rect.top and player_rect.bottom <= plat_rect.bottom and player_rect.right >= plat_rect.left and player_rect.left <= plat_rect.right and not self.is_jumping:
 			return True
+
+	def check_enemy_collision(self, enemy_rect):
+		slash_rect = self.rect
+
+		if enemy_rect.right >= slash_rect.left and enemy_rect.right <= slash_rect.right and enemy_rect.bottom > slash_rect.top and enemy_rect.top < slash_rect.bottom:
+			return True
+		if enemy_rect.left <= slash_rect.right and enemy_rect.right >= slash_rect.left and enemy_rect.bottom > slash_rect.top and enemy_rect.top < slash_rect.bottom:
+			return True
+		else:
+			return False
 
 	def check_slash_collision(self, enemy_rect):
 

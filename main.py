@@ -68,13 +68,13 @@ def draw_sides():
 def display_command_prompt(current_text, y):
 	text = BASIC_FONT.render(current_text,True,green)
 	text_rect = text.get_rect()
-	text_rect.topleft = (10, 20 * y)
+	text_rect.topleft = (10, 10 * y)
 	display_surf.blit(text, text_rect)
 
 # Displays the death announcement
 
 def display_death(current_text):
-	result_surf = BASIC_FONT.render('YOU DIED', True, red)
+	result_surf = BASIC_FONT_1.render('YOU DIED', True, red)
 	restart_surf = BASIC_FONT_1.render('Press Enter to Restart..', True, WHITE)
 	result_rect = result_surf.get_rect()
 	restart_rect = restart_surf.get_rect()
@@ -90,8 +90,8 @@ def display_health(health):
 	health_bar_text_rect = health_bar_text.get_rect()
 	health_bar_text_rect.topleft = (10,5)
 
-	health_bar = pygame.Rect(11, 15, 50 * health, 5)
-	health_bar_background = pygame.Rect(11, 15, 30, 5)
+	health_bar = pygame.Rect(11, 15, 15 * health, 5)
+	health_bar_background = pygame.Rect(11, 15, 150, 5)
 
 	pygame.draw.rect(display_surf, grey, health_bar_background)
 	pygame.draw.rect(display_surf, green, health_bar)
@@ -109,9 +109,10 @@ def main():
 
 	global BASIC_FONT, BASIC_FONT_SIZE, BASIC_FONT_1
 
-	BASIC_FONT_SIZE = 20
+	BASIC_FONT_SIZE = 10
 	BASIC_FONT = pygame.font.Font('freesansbold.ttf', BASIC_FONT_SIZE)
 	BASIC_FONT_1 = pygame.font.Font('freesansbold.ttf', 15)
+	COMMAND_FONT = pygame.font.Font('freesansbold.ttf', 10)
 
 	fps_clock = pygame.time.Clock()
 	display_surf = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
@@ -154,6 +155,9 @@ def main():
 	line_counter = 1
 
 	current_text = "%s::~>> " % str(newline_counter)
+
+	level_complete = False
+	challenge_complete = False
 
 	# _______ IMAGE STUFF __________________
 
@@ -325,9 +329,6 @@ def main():
 							text = BASIC_FONT.render(current_text, True, green)
 						elif event.key == pygame.K_KP_PLUS:
 							current_text+="+"
-							text = BASIC_FONT.render(current_text, True, green)
-						elif event.key == pygame.K_KP_ASTERISK:
-							current_text+="*"
 							text = BASIC_FONT.render(current_text, True, green)
 						elif event.key == pygame.K_MINUS:
 							current_text+="-"
@@ -528,13 +529,22 @@ def main():
 
 			if boss_is_active:
 				boss.move(right_side_rect, left_side_rect)
-				# boss.draw(display_surf, red)
 				boss.draw_health(display_surf, red, grey)
+				if player.check_slash_collision(boss.rect):
+					boss.health -= 1
 
 			if (boss.health > 0):
 				boss.draw(display_surf, red)
+			else:
+				boss_is_active = False
+				boss.draw_health(display_surf, BLACK, BLACK)
+				level_complete = True
 
 			boss.rect.y = platforms[51].rect.y - (LINE_THICKNESS + 10)
+
+			#________ IF LEVEL HAS COMPLETED __________
+
+			# draw you win stuff
 
 			# ____________ ENEMY STUFF ________________
 
@@ -543,6 +553,9 @@ def main():
 				i.draw(display_surf)
 				if player.check_slash_collision(i.rect):
 					enemies.remove(i)
+
+				if player.check_enemy_collision(i.rect):
+					player.health -= 1
 
 			# __________ PLATFORM STUFF ______________
 
@@ -585,7 +598,7 @@ def main():
 			elif last_is_on >= 21 and last_is_on < 51:
 				for i in platforms:
 					i.vel = 2
-			elif last_is_on >= 50:
+			elif last_is_on >= 48:
 				if platforms[50].rect.y < platforms[51].rect.y + 200:
 					platforms[51].vel = 1
 				else:
