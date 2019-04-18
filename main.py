@@ -27,6 +27,7 @@ LINE_THICKNESS = 10
 # Colors
 
 BLACK = (0, 0, 0)
+black = (0, 0, 0)
 WHITE = (255, 255, 255)
 blue = pygame.Color('dodgerblue')
 red = pygame.Color('firebrick1')
@@ -57,6 +58,20 @@ def draw_title_screen():
 	display_surf.blit(title_text, title_rect)
 	display_surf.blit(pentagram, pentagram_rect)
 
+def draw_problem_screen(current_level):
+	if current_level == 1:
+		problem_surf_0 = BASIC_FONT_1.render("Your Task: -Declare 2 integers", True, green)
+		problem_surf_1 = BASIC_FONT_1.render("-Calculate their difference to equal 10", True, green)
+		problem_surf_2 = BASIC_FONT_1.render("-Print to the Screen", True, green)
+		problem_rect_0 = problem_surf_0.get_rect()
+		problem_rect_1 = problem_surf_1.get_rect()
+		problem_rect_2 = problem_surf_2.get_rect()
+		problem_rect_0.topleft = (10, 10)
+		problem_rect_1.topleft = (10, 20)
+		problem_rect_2.topleft = (10, 30)
+		display_surf.blit(problem_surf_0, problem_rect_0)
+		display_surf.blit(problem_surf_1, problem_rect_1)
+		display_surf.blit(problem_surf_2, problem_rect_2)
 
 def draw_arena():
 	display_surf.fill((0, 0, 0))
@@ -83,18 +98,18 @@ def display_death(current_text):
 	display_surf.blit(result_surf, result_rect)
 	display_surf.blit(restart_surf, restart_rect)
 
-def display_health(health):
+def display_health(health, color, color2):
 	health_font = pygame.font.Font('freesansbold.ttf', 10)
 
-	health_bar_text = health_font.render('Health', True, green)
+	health_bar_text = health_font.render('Health', True, color)
 	health_bar_text_rect = health_bar_text.get_rect()
 	health_bar_text_rect.topleft = (10,5)
 
 	health_bar = pygame.Rect(11, 15, 15 * health, 5)
 	health_bar_background = pygame.Rect(11, 15, 150, 5)
 
-	pygame.draw.rect(display_surf, grey, health_bar_background)
-	pygame.draw.rect(display_surf, green, health_bar)
+	pygame.draw.rect(display_surf, color2, health_bar_background)
+	pygame.draw.rect(display_surf, color, health_bar)
 	display_surf.blit(health_bar_text, health_bar_text_rect)
 
 
@@ -159,6 +174,11 @@ def main():
 	level_complete = False
 	challenge_complete = False
 
+	current_level = 1
+
+	problem_displayed = False
+	problem_solved = False
+
 	# _______ IMAGE STUFF __________________
 
 	blood_right = GIFImage.GIFImage("blood_anim_right.gif")
@@ -175,6 +195,10 @@ def main():
 
 
 	# ________ LEVEL GENERATION ___________
+
+	ground = 0
+
+	# level 1
 
 	for i in range(52):
 
@@ -194,8 +218,17 @@ def main():
 			platforms.append(Platform.Platform(rand, WINDOW_HEIGHT/2 - LINE_THICKNESS/2 + 100 - 50 * (i), rand_width, 10, t, 1))
 		elif i == 0:
 			platforms.append(Platform.Platform(10, WINDOW_HEIGHT/2 - LINE_THICKNESS/2 + 100 - 50 * (i), 50, 10, "static", 1))
-		else:
-			platforms.append(Platform.Platform(10, WINDOW_HEIGHT/2 - LINE_THICKNESS/2 + (100 - 50 * (i)) - 50, 400, 10, "static", 1))
+		elif i == 51:
+			platforms.append(Platform.Platform(10, WINDOW_HEIGHT/2 - LINE_THICKNESS/2 + (100 - 50 * (i)) - 50, 2000, 10, "static", 1))
+			ground = WINDOW_HEIGHT/2 - LINE_THICKNESS/2 + (100 - 50 * (i)) - 50
+
+	# level 2 ______
+
+	for i in range(50):
+		rand = random.randint(100, 300) 
+		rand_width = random.randint(30, 100)
+		platforms.append(Platform.Platform(400 + (i * 100), ground - rand, rand_width, 10, "static", 0))
+
 
 	# Draws the starting position of the Arena
 
@@ -378,6 +411,12 @@ def main():
 							commands.append(Textbox(current_text, green, BASIC_FONT, newline_counter))
 							if input_command(current_text):
 								output = input_command(current_text)
+								if level_complete:
+									if output == 10:
+										problem_solved = True
+										command_displayed = False
+										game_started = True
+										current_level = 2
 								newline_counter += 1
 								commands.append(Textbox(str(output), green, BASIC_FONT, newline_counter))
 							newline_counter += 1
@@ -396,8 +435,11 @@ def main():
 						command_displayed = True
 						display_command_prompt(current_text, newline_counter)
 					else:
-						game_started = True
-						command_displayed = False
+						if level_complete != True:
+							game_started = True
+							command_displayed = False
+						else:
+							command_displayed = False
 
 				if command_displayed:
 					display_command_prompt(current_text, newline_counter)
@@ -487,29 +529,40 @@ def main():
 			# _______ PLAYER MOVEMENT _________________
 
 			if move_right:
-				if(player.rect.right < right_side_rect.left - 2):
-					player.move_right(multiplier)
-				else:
-					player.rect.x = right_side_rect.x - 11
-					player.hit_rect.x = right_side_rect.x - 11
-					player.can_move_right = False
-					if not player.is_wall_jumping:
-						player.can_wall_jump = True
+				if level_type == "vertical":
+					if(player.rect.right < right_side_rect.left - 2):
+						player.move_right(multiplier)
+					else:
+						player.rect.x = right_side_rect.x - 11
+						player.hit_rect.x = right_side_rect.x - 11
+						player.can_move_right = False
+						if not player.is_wall_jumping:
+							player.can_wall_jump = True
 				if level_type == "horizontal":
 					for i in platforms:
-						i.move_left(3 * multiplier)
+						i.move_left(4 * multiplier)
+					left_side_rect.x -= (4 * multiplier)
+
+					if(player.rect.x < 300):
+						player.move_right(multiplier)
+
+
 			if move_left:
-				if(player.rect.left > left_side_rect.right + 2):
-					player.move_left(multiplier)
-				else:
-					player.rect.x = left_side_rect.x + 11
-					player.hit_rect.x = left_side_rect.x + 11
-					player.can_move_left = False
-					if not player.is_wall_jumping:
-						player.can_wall_jump = True
-				if level_type == "horizontal":
+				if level_type == "vertical":
+					if(player.rect.left > left_side_rect.right + 2):
+						player.move_left(multiplier)
+					else:
+						player.rect.x = left_side_rect.x + 11
+						player.hit_rect.x = left_side_rect.x + 11
+						player.can_move_left = False
+						if not player.is_wall_jumping:
+							player.can_wall_jump = True
+				if  level_type == "horizontal":
 					for i in platforms:
-						i.move_right(3 * multiplier)
+						i.move_right(4 * multiplier)
+					left_side_rect.x += (4 * multiplier)
+					if(player.rect.x > 100):
+						player.move_left(multiplier)
 
 			if player.rect.left > left_side_rect.right + 2:
 				player.can_move_left = True
@@ -540,9 +593,24 @@ def main():
 				boss.draw_health(display_surf, BLACK, BLACK)
 				level_complete = True
 
+
 			boss.rect.y = platforms[51].rect.y - (LINE_THICKNESS + 10)
 
 			#________ IF LEVEL HAS COMPLETED __________
+
+			if level_complete:
+				game_started = False
+				if problem_displayed == False and problem_solved == False:
+					display_surf.fill((0, 0, 0))
+					draw_problem_screen(current_level)
+					problem_displayed = True
+				if problem_solved:
+					problem_displayed = False
+					command_displayed = False
+					current_level = 2
+					level_complete = False
+					game_started = True
+
 
 			# draw you win stuff
 
@@ -553,9 +621,10 @@ def main():
 				i.draw(display_surf)
 				if player.check_slash_collision(i.rect):
 					enemies.remove(i)
-
 				if player.check_enemy_collision(i.rect):
 					player.health -= 1
+				if i.rect.top < platforms[51].rect.bottom:
+					enemies.remove(i)
 
 			# __________ PLATFORM STUFF ______________
 
@@ -595,14 +664,21 @@ def main():
 			if last_is_on >= 10 and last_is_on <= 20:
 				for i in platforms:
 					i.vel = 1
-			elif last_is_on >= 21 and last_is_on < 51:
+			elif last_is_on >= 21 and last_is_on < 50:
 				for i in platforms:
 					i.vel = 2
-			elif last_is_on >= 48:
-				if platforms[50].rect.y < platforms[51].rect.y + 200:
+			elif last_is_on >= 49:
+				if platforms[50].rect.y < platforms[51].rect.y + 250:
 					platforms[51].vel = 1
 				else:
+					#if last_is_on == 51:
+					for i in range(len(platforms)):
+						if i > 51:
+							platforms[i].set_plat_vel(0)
+							platforms[i].type = "last"
+					# platforms[51:].set_plat_vel(0)
 					platforms[51].set_plat_vel(0)
+					# platforms[51:].type = "last"
 					platforms[51].type = "last"
 					boss_is_active = True
 
@@ -676,13 +752,34 @@ def main():
 
 			# --------------------------------------------
 
-			display_health(player.health)
+			# ________ LEVEL 2 ______________
+
+			if game_started and problem_solved:
+				current_level = 2
+				level_type = "horizontal"
+				right_side_rect.x += 2000
+
+
+
+			if game_started:
+				if problem_displayed:
+					pass
+				else:
+					if player.health > 0:
+						display_health(player.health, green, grey)
+					else:
+						display_surf.fill((0,0,0))
+						display_death(current_text)
+						is_dead = True
+						game_started = False
 
 			# check death
 
 			if(platforms[last_is_on].rect.y < -200):
+				display_surf.fill((0,0,0))
 				display_death(current_text)
 				is_dead = True
+				game_started = False
 
 			# -----------------------------------------
 
