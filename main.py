@@ -47,16 +47,16 @@ commands = []
 
 def draw_title_screen():
 	display_surf.fill((0, 0, 0))
-	pentagram = pygame.image.load('pentagram.jpg').convert()
-	pentagram = pygame.transform.scale(pentagram, (100, 100))
-	pentagram_rect = pentagram.get_rect()
+	#pentagram = pygame.image.load('pentagram.jpg').convert()
+	#pentagram = pygame.transform.scale(pentagram, (100, 100))
+	#pentagram_rect = pentagram.get_rect()
 	title_font = pygame.font.Font('freesansbold.ttf', 30)
-	title_text = title_font.render('SLAY SATAN\'S MINIONS', True, red)
+	title_text = title_font.render('Platformer Demo', True, red)
 	title_rect = title_text.get_rect()
-	pentagram_rect.topleft = (WINDOW_WIDTH/2 - 100, WINDOW_HEIGHT/2 - 100)
+	#pentagram_rect.topleft = (WINDOW_WIDTH/2 - 100, WINDOW_HEIGHT/2 - 100)
 	title_rect.topleft = (0, 0)
 	display_surf.blit(title_text, title_rect)
-	display_surf.blit(pentagram, pentagram_rect)
+	#display_surf.blit(pentagram, pentagram_rect)
 
 def draw_problem_screen(current_level):
 	if current_level == 1:
@@ -66,9 +66,9 @@ def draw_problem_screen(current_level):
 		problem_rect_0 = problem_surf_0.get_rect()
 		problem_rect_1 = problem_surf_1.get_rect()
 		problem_rect_2 = problem_surf_2.get_rect()
-		problem_rect_0.topleft = (10, 10)
-		problem_rect_1.topleft = (10, 20)
-		problem_rect_2.topleft = (10, 30)
+		problem_rect_0.topleft = (10, 15)
+		problem_rect_1.topleft = (10, 30)
+		problem_rect_2.topleft = (10, 45)
 		display_surf.blit(problem_surf_0, problem_rect_0)
 		display_surf.blit(problem_surf_1, problem_rect_1)
 		display_surf.blit(problem_surf_2, problem_rect_2)
@@ -83,7 +83,7 @@ def draw_sides():
 def display_command_prompt(current_text, y):
 	text = BASIC_FONT.render(current_text,True,green)
 	text_rect = text.get_rect()
-	text_rect.topleft = (10, 10 * y)
+	text_rect.topleft = (10, 15 * y)
 	display_surf.blit(text, text_rect)
 
 # Displays the death announcement
@@ -119,19 +119,21 @@ platforms = []
 
 def main():
 
+	# ____________ VARIABLE DECS _________________________
+
 	pygame.init()
 	global display_surf
 
 	global BASIC_FONT, BASIC_FONT_SIZE, BASIC_FONT_1
 
-	BASIC_FONT_SIZE = 10
+	BASIC_FONT_SIZE = 15
 	BASIC_FONT = pygame.font.Font('freesansbold.ttf', BASIC_FONT_SIZE)
 	BASIC_FONT_1 = pygame.font.Font('freesansbold.ttf', 15)
 	COMMAND_FONT = pygame.font.Font('freesansbold.ttf', 10)
 
 	fps_clock = pygame.time.Clock()
 	display_surf = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-	pygame.display.set_caption('Dumpy')
+	pygame.display.set_caption('Platformer')
 
 	player = Player.Player(WINDOW_WIDTH, WINDOW_HEIGHT, LINE_THICKNESS)
 
@@ -227,7 +229,7 @@ def main():
 	for i in range(50):
 		rand = random.randint(100, 300) 
 		rand_width = random.randint(30, 100)
-		platforms.append(Platform.Platform(400 + (i * 100), ground - rand, rand_width, 10, "static", 0))
+		platforms.append(Platform.Platform(400 + (i * 100), ground - (i * 100), rand_width, 10, "static", 0))
 
 
 	# Draws the starting position of the Arena
@@ -437,6 +439,7 @@ def main():
 					else:
 						if level_complete != True:
 							game_started = True
+							problem_solved = True
 							command_displayed = False
 						else:
 							command_displayed = False
@@ -516,7 +519,7 @@ def main():
 
 			# _______ ENEMY SPAWNING _________________
 
-			if platforms[is_on].type != "last":
+			if platforms[is_on].type != "last" and current_level == 1:
 
 				e_spawn_counter += 1
 
@@ -671,16 +674,17 @@ def main():
 				if platforms[50].rect.y < platforms[51].rect.y + 250:
 					platforms[51].vel = 1
 				else:
-					#if last_is_on == 51:
-					for i in range(len(platforms)):
-						if i > 51:
-							platforms[i].set_plat_vel(0)
-							platforms[i].type = "last"
-					# platforms[51:].set_plat_vel(0)
-					platforms[51].set_plat_vel(0)
-					# platforms[51:].type = "last"
-					platforms[51].type = "last"
-					boss_is_active = True
+					if current_level == 1:
+						#if last_is_on == 51:
+						for i in range(len(platforms)):
+							if i > 51:
+								platforms[i].set_plat_vel(0)
+								platforms[i].type = "last"
+						# platforms[51:].set_plat_vel(0)
+						platforms[51].set_plat_vel(0)
+						# platforms[51:].type = "last"
+						platforms[51].type = "last"
+						boss_is_active = True
 
 			else:
 				platform_vel = 0
@@ -755,9 +759,12 @@ def main():
 			# ________ LEVEL 2 ______________
 
 			if game_started and problem_solved:
+				#problem_solved = False
 				current_level = 2
 				level_type = "horizontal"
 				right_side_rect.x += 2000
+				for i in platforms:
+					i.type = "static"
 
 
 
